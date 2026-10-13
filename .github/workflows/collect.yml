@@ -1,1 +1,30 @@
-
+name: Collect prices
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 5 * * *'
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Import catalog
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CATALOG_SOURCE: ${{ vars.CATALOG_SOURCE }}
+          ALLOWED_SOURCE_HOSTS: ${{ vars.ALLOWED_SOURCE_HOSTS }}
+        run: |
+          if [ -z "$CATALOG_SOURCE" ]; then
+            echo 'No CATALOG_SOURCE configured; skipping scheduled import (demo is manual only).'
+            exit 0
+          fi
+          python collector.py --source "$CATALOG_SOURCE"
