@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Import sample prices into Supabase
+      - name: Test Tesco prices
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}       
-run: python collector.py --source data/tesco_2026_10.csv --date 2026-10-14 --dry-run
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python collector.py --source data/tesco_2026_10.csv --date 2026-10-14 --dry-run
