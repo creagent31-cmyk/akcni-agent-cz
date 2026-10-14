@@ -23,5 +23,5 @@ jobs:
       - name: Import sample prices into Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: python collector.py --source data/sample.csv
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}       
+run: python collector.py --source data/tesco_2026_10.csv --date 2026-10-14 --dry-run
