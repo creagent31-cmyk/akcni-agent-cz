@@ -1,0 +1,6 @@
+
+retailer,store,sku,product_name,package,price_czk,price_type,source_url
+Tesco,Hypermarket,TESCO_FLYER_20261014_BANANY,Banány,1 kg,26.90,promotion,
+Tesco,Hypermarket,TESCO_FLYER_20261014_BRAMBORY,Brambory,1 kg,12.90,promotion,
+Tesco,Hypermarket,TESCO_FLYER_20261014_MALINY,Maliny,125 g,36.90,promotion,
+Tesco,Hypermarket,TESCO_FLYER_20261014_BROKOLICE,Tesco brokolice,500 g,29.90,loyalty,
