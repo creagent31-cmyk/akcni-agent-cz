@@ -1,0 +1,67 @@
+
+name: Process Tesco flyers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Process Tesco PDF part 1
+        run: |
+          python collectors/flyer_history.py data/tesco_2026_10_part1.pdf --output-dir output/part1
+
+      - name: Process Tesco PDF part 2
+        run: |
+          python collectors/flyer_history.py data/tesco_2026_10_part2.pdf --output-dir output/part2
+
+      - name: Combine CSV results
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          for filename in ("flyer_candidates.csv", "flyer_text_blocks.csv"):
+              source_files = [
+                  Path("output/part1") / filename,
+                  Path("output/part2") / filename,
+              ]
+              destination = Path("output") / filename
+
+              with destination.open("w", newline="", encoding="utf-8-sig") as out:
+                  writer = None
+                  for source in source_files:
+                      with source.open("r", encoding="utf-8-sig", newline="") as inp:
+                          reader = csv.DictReader(inp)
+                          if writer is None:
+                              writer = csv.DictWriter(out, fieldnames=reader.fieldnames)
+                              writer.writeheader()
+                          for row in reader:
+                              if source.parent.name == "part2":
+                                  row["page"] = str(int(row["page"]) + 18)
+                              writer.writerow(row)
+
+              print(f"Combined: {destination}")
+          PY
+
+      - name: Upload CSV results
+        uses: actions/upload-artifact@v4
+        with:
+          name: tesco-flyer-results
+          path: |
+            output/flyer_candidates.csv
+            output/flyer_text_blocks.csv
+          retention-days: 30
